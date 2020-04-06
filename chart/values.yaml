@@ -11,32 +11,29 @@ timescaledb-single:
     enabled: false
   # number or TimescaleDB pods to spawn (default is 3, 1 for no HA)
   replicaCount: 1
-  nodeSelector: {}
-  resources:
-    requests:
-      cpu: 3
-      memory: 7
 
 
 # Values for configuring the deployment of the Timescale Prometheus Connector
 # The charts README is at:
-#   https://github.com/timescale/prometheus-postgresql-adapter-private/tree/series-schema/helm-chart
-#   TODO: Change this link before publishing
+#   https://github.com/timescale/timescale-prometheus/tree/master/helm-chart
 timescale-prometheus:
-  # TODO: change to public docker image
-  image: delixd/timescale-prometheus:0402
+  image: timescale/timescale-prometheus
   enabled: true
   # connection options
   connection:
     # user to connect to TimescaleDB with
     user: postgres
-    # A secret containing the password for the user used 
+    # The secret containing the password for the user used 
     # to connect to the database needs to be created before 
     # installing the chart.
     # If using the timescaledb helm chart (yes by default)
     # and the credentials it creates
-    # set this to "plannedReleaseName-timescaledb-passwords"
-    passwordSecret: "already-existing-secret"
+    # this is set to "{{ .Release.Name }}-timescaledb-passwords"
+    # use:
+    # password:
+    #  secretTemplate: "already-existing-secret"
+    # to change the secret name by setting either a template or a string
+    
     # db host by default configured to "{{ .Release.Name }}.default.svc.cluster.local"
     # use:
     # host:
@@ -60,7 +57,7 @@ timescale-prometheus:
       cpu: 1
   # configuration options for the prometheus remote_write
   # these options are not used by the timescale-prometheus chart
-  # but by this one
+  # but by the prometheus server one
   remote:
     # queue config 
     # see: https://prometheus.io/docs/practices/remote_write/
